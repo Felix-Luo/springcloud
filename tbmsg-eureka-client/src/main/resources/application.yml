@@ -1,0 +1,131 @@
+############################springcloud参数配置###############################
+server:
+  address: 0.0.0.0
+  port: 8089
+  servlet:
+    context-path: /tbmsg
+
+spring:
+  application:
+    name: tbmsg-eureka-client
+  datasource:
+    ##########################mysql配置##################################
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/db_msg?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: odm-snoddb
+    ############################数据库-Hikari连接池配置##################
+    hikari:
+      #最小空闲连接数量
+      minimum-idle: 5
+      #连接池最大连接数，默认是10
+      maximum-pool-size: 20
+      #此属性控制从池返回的连接的默认自动提交行为,默认值：true
+      auto-commit: true
+      #空闲连接存活最大时间，默认600000（10分钟）
+      idle-timeout: 180000
+      #连接池名称
+      pool-name: MyHikariCP
+      #此属性控制池中连接的最长生命周期，值0表示无限生命周期，默认1800000即30分钟
+      max-lifetime: 1800000
+      #数据库连接超时时间,默认30秒，即30000
+      connection-timeout: 10000
+      #心跳检测
+      connection-test-query: SELECT 1
+  ############################redis配置##################
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 0
+    # Redis服务器地址
+    host: localhost
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: redis.snod.com.cn
+    # 连接超时时间（毫秒）
+    timeout: 5000
+    #jedis:
+      #pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        #max-active: 16
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        #max-wait: -1
+        # 连接池中的最大空闲连接
+        #max-idle: 10
+        # 连接池中的最小空闲连接
+        #min-idle: 5
+    lettuce:
+      pool:
+        # 连接池最大连接数（使用负值表示没有限制）
+        max-active: 16
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1
+        # 连接池中的最大空闲连接
+        max-idle: 10
+        # 连接池中的最小空闲连接
+        min-idle: 5
+  servlet:
+      ############################文件上传配置##################################
+      multipart:
+        #单个文件最大10M
+        max-file-size: 10MB
+        #总文件最大100M
+        max-request-size: 50MB
+  mvc:
+      #表示所有的访问都经过静态资源路径（静态资源访问url前缀：host:port/projectName/file）
+      static-path-pattern: ${localResourceMappingPath}
+  resources:
+      #表示静态资源url路径映射的服务器本地路径(如通过:host:port/projectName/file/xxx.jpg获取图片)
+      static-locations: file:${localResourcePath}
+  ############################热部署配置（用于本地调试）##################################
+    #页面热部署（即页面修改后会立即生效）
+  thymeleaf:
+      cache: false
+  devtools:
+    restart:
+      # 热部署开关，false即不启用热部署
+      enabled: true
+      # 指定热部署更新的目录
+      additional-paths: src/main
+      # 热部署指定目录不更新
+      exclude: test/**
+
+############################eureka配置##################################
+eureka:
+  instance:
+    hostname: localhost
+    instance-id: ${eureka.instance.hostname}:${spring.application.name}:${server.port}
+    # 表示eureka client间隔多久去拉取服务注册信息，默认为30秒，如果要迅速获取服务注册状态，可以缩小该值
+    lease-renewal-interval-in-seconds: 5
+    # 表示eureka server至上一次收到client的心跳之后，等待下一次心跳的超时时间，在这个时间内若没收到下一次心跳，则将移除该instance。
+    # 默认为90秒
+    # 如果该值太大，则很可能将流量转发过去的时候，该instance已经不存活了。
+    # 如果该值设置太小了，则instance则很可能因为临时的网络抖动而被摘除掉。
+    # 该值至少应该大于 leaseRenewalIntervalInSeconds
+    lease-expiration-duration-in-seconds: 10
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:9527/eureka/
+      #defaultZone: http://localhost:9527/eureka/,http://localhost:9528/eureka/,http://localhost:9529/eureka/
+      #defaultZone: http://Slave1:9527/eureka/,http://Slave2:9527/eureka/,http://Slave3:9527/eureka/
+
+############################app参数配置###############################
+#文件存贮根目录
+#生产环境下的路径
+localResourcePath: /usr/local/web/file/
+#本地测试的路径
+#localResourcePath: D://file/
+#访问本地文件的url前缀
+localResourceUrlPrefix: file
+localResourceMappingPath: /${localResourceUrlPrefix}/**
+#图片文件存贮目录
+imageFolder: image
+#服务器存贮文件路径
+localResourceUrlPath: ${localResourceUrlPrefix}
+#localResourceUrlPath: http://localhost:80/${server.servlet.context-path}/${localResourceUrlPrefix}
+#token有效天数,默认7天
+tokenValidDay: 7
+#微信小程序ID
+appId: abc
+#微信小程序秘钥
+appSecret: efg

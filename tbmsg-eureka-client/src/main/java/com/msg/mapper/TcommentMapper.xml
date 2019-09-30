@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.msg.mapper.TcommentMapper">
+
+	<!--添加-->
+	<insert id="add" parameterType="com.msg.pojo.Tcomment" >
+		INSERT INTO t_comment ( openid,content,urls,createTime,updateTime)
+		VALUES ( #{openid}, #{content}, #{urls}, #{createTime}, #{createTime})
+	</insert>
+
+	<!--删除-->
+	<delete id="delete" parameterType="com.msg.pojo.Tcomment" >
+		delete from t_comment where id = #{id, jdbcType=INTEGER}
+	</delete>
+
+	<!--查找-->
+	<select id="query" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT A.content,A.createTime,A.id,A.updateTime,A.urls,
+		B.avatarUrl,B.birthDay,B.createTime tuser_createTime,B.id tuser_id,B.nickName,B.phone,B.sex,B.updateTime tuser_updateTime
+		FROM t_comment A
+		LEFT JOIN t_user B ON A.openid = B.openid
+		<if test=" startRow != null and pageSize != null ">
+			limit #{startRow}, #{pageSize}
+		</if>
+	</select>
+
+	<!--修改-->
+	<update id="update" parameterType="com.msg.pojo.Tcomment">
+		update t_comment
+		set content = #{content},urls = #{urls},updateTime = #{updateTime}
+		where id = #{id}
+	</update>
+
+</mapper>

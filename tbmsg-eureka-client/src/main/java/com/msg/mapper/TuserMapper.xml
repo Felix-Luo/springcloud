@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.msg.mapper.TuserMapper">
+
+	<!--添加-->
+	<insert id="add" parameterType="com.msg.pojo.Tuser" keyProperty="id">
+		/*返回主键id*/
+		<selectKey keyProperty='id' resultType='int' order='AFTER'  >
+			select LAST_INSERT_ID();
+		</selectKey>
+		INSERT INTO t_user (appid,nickName, openid,avatarUrl,birthDay,phone,sex,createTime,updateTime)
+		VALUES (#{appid}, #{nickName}, #{openid}, #{avatarUrl}, #{birthDay}, #{phone}, #{sex}, #{createTime}, #{createTime})
+	</insert>
+
+	<!--删除-->
+	<delete id="delete" parameterType="com.msg.pojo.Tuser" >
+		delete from t_user
+		where
+		/*id不为空，则根据id主键进行删除*/
+		<if test=" id != null">
+			id = #{id, jdbcType=INTEGER}
+		</if>
+		<if test=" id == null">
+			/*id为空，appid与openid不为空，则根据appid与openid进行删除*/
+			<if test=" openid != null and appid != null ">
+				openid = #{openid, jdbcType=VARCHAR} AND appid = #{appid, jdbcType=VARCHAR}
+			</if>
+			/*id为空，appid与openid有一个为空，则不进行删除操作*/
+			<if test=" openid == null or appid == null ">
+				1=2
+			</if>
+		</if>
+
+	</delete>
+
+	<!--查找-->
+	<select id="query" parameterType="java.util.HashMap" resultType="com.msg.pojo.Tuser">
+		select * from t_user
+		where 1=1
+		<if test=" id != null">
+			and id = #{id, jdbcType=INTEGER}
+		</if>
+		<if test=" openid != null and openid != '' ">
+			and openid = #{openid, jdbcType=VARCHAR}
+		</if>
+	</select>
+
+	<!--修改-->
+	<update id="update" parameterType="com.msg.pojo.Tuser">
+		update t_user
+		set nickName = #{nickName}, avatarUrl = #{avatarUrl},birthDay = #{birthDay},
+			phone = #{phone}, sex = #{sex},updateTime = #{updateTime}
+		where
+		<if test=" openid != null and openid != '' ">
+			openid = #{openid, jdbcType=VARCHAR}
+		</if>
+		<if test=" openid == null or openid == '' ">
+			1 = 2
+		</if>
+	</update>
+
+</mapper>
